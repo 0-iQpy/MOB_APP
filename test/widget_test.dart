@@ -164,4 +164,70 @@ void main() {
     await selectAll();
     expect(find.text('12 STYLES'), findsOneWidget);
   });
+
+  testWidgets('completes simulated checkout flow and confirms order', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const UrbanThreadsApp());
+
+    // Navigate to Shop and add an item to bag
+    await tester.tap(find.text('Shop').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('CLASSIC BOX TEE').first);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('XL').first);
+    await tester.tap(find.text('ADD TO BAG').first);
+    await tester.pumpAndSettle();
+
+    // Open bag via SnackBar action or header button
+    await tester.tap(find.text('VIEW BAG'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('YOUR BAG'), findsOneWidget);
+    expect(find.text('CONTINUE TO CHECKOUT'), findsOneWidget);
+
+    // Tap checkout
+    await tester.tap(find.text('CONTINUE TO CHECKOUT'));
+    await tester.pumpAndSettle();
+
+    // Verify simulated checkout sheet appears
+    expect(find.text('CHECKOUT'), findsOneWidget);
+    expect(find.text('SIMULATED DEMO'), findsOneWidget);
+    expect(find.text('DELIVERY ADDRESS'), findsOneWidget);
+    expect(find.text('PAYMENT METHOD'), findsOneWidget);
+    expect(find.text('GCash'), findsOneWidget);
+    expect(find.text('Maya'), findsOneWidget);
+    expect(find.text('Card'), findsOneWidget);
+    expect(find.text('Cash on Delivery'), findsOneWidget);
+
+    // Tap place order button
+    final placeOrderFinder = find.textContaining('PLACE ORDER');
+    expect(placeOrderFinder, findsOneWidget);
+    await tester.tap(placeOrderFinder);
+    await tester.pump();
+
+    // Verify processing state
+    expect(find.text('Securing simulated payment...'), findsOneWidget);
+
+    // Settle to complete simulated delay and enter order confirmed state
+    await tester.pumpAndSettle();
+
+    expect(find.text('ORDER CONFIRMED'), findsOneWidget);
+    expect(find.textContaining('Reference: #UT-'), findsOneWidget);
+    expect(find.text('Estimated delivery: 2-3 business days'), findsOneWidget);
+    expect(find.text('CONTINUE SHOPPING'), findsOneWidget);
+
+    // Tap continue shopping
+    await tester.tap(find.text('CONTINUE SHOPPING'));
+    await tester.pumpAndSettle();
+
+    // Verify bag is cleared
+    expect(find.text('YOUR BAG IS EMPTY'), findsOneWidget);
+  });
 }
