@@ -59,18 +59,30 @@ class RemotePhoto extends StatelessWidget {
   final BoxFit fit;
 
   @override
-  Widget build(BuildContext context) => Image.network(
+  Widget build(BuildContext context) {
+    if (url.startsWith('assets/')) {
+      return Image.asset(
         url,
         fit: fit,
         semanticLabel: label,
         filterQuality: FilterQuality.medium,
-        loadingBuilder: (context, child, progress) {
-          if (progress == null) return child;
-          return _PhotoPlaceholder(label: 'LOADING IMAGE', icon: icon);
-        },
         errorBuilder: (context, error, stackTrace) =>
             _PhotoPlaceholder(label: 'IMAGE UNAVAILABLE', icon: icon),
       );
+    }
+    return Image.network(
+      url,
+      fit: fit,
+      semanticLabel: label,
+      filterQuality: FilterQuality.medium,
+      loadingBuilder: (context, child, progress) {
+        if (progress == null) return child;
+        return _PhotoPlaceholder(label: 'LOADING IMAGE', icon: icon);
+      },
+      errorBuilder: (context, error, stackTrace) =>
+          _PhotoPlaceholder(label: 'IMAGE UNAVAILABLE', icon: icon),
+    );
+  }
 }
 
 class _PhotoPlaceholder extends StatelessWidget {

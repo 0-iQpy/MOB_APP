@@ -77,6 +77,10 @@ class ShopSection extends StatelessWidget {
                         ('ALL', 'ALL'),
                         ('T-SHIRTS', 'T-SHIRTS'),
                         ('HOODIES', 'HOODIES'),
+                        ('JACKETS', 'JACKETS'),
+                        ('SHIRTS', 'SHIRTS'),
+                        ('BOTTOMS', 'BOTTOMS'),
+                        ('ACCESSORIES', 'ACCESSORIES'),
                       ])
                         _ShopFilter(
                           label: option.$2,

@@ -95,7 +95,11 @@ class _MobileCatalogScreenState extends State<MobileCatalogScreen> {
                       for (final category in const [
                         'ALL',
                         'T-SHIRTS',
-                        'HOODIES'
+                        'HOODIES',
+                        'JACKETS',
+                        'SHIRTS',
+                        'BOTTOMS',
+                        'ACCESSORIES'
                       ])
                         Padding(
                           padding: const EdgeInsets.only(right: 8),
