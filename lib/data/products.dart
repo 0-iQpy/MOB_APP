@@ -43,8 +43,8 @@ const products = <Product>[
   ),
   Product(
     id: 'crewneck-sweatshirt-sage',
-    name: 'OVERSIZED CREWNECK',
-    color: 'Sage mist',
+    name: 'OVERSIZED HOODIE',
+    color: 'Sage green',
     category: 'HOODIES',
     price: 1190,
     tag: 'BESTSELLER',
@@ -84,7 +84,7 @@ const products = <Product>[
   Product(
     id: 'linen-buttondown-shirt',
     name: 'RELAXED LINEN SHIRT',
-    color: 'Crisp ecru',
+    color: 'Chambray blue',
     category: 'SHIRTS',
     price: 990,
     tag: 'NEW',
