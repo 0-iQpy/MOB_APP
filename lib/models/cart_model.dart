@@ -46,4 +46,9 @@ class CartModel extends ChangeNotifier {
     );
     notifyListeners();
   }
+
+  void clear() {
+    _lines.clear();
+    notifyListeners();
+  }
 }

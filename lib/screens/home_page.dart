@@ -12,6 +12,7 @@ import 'package:urban_threads/widgets/cart_panel.dart';
 import 'package:urban_threads/widgets/hero_section.dart';
 import 'package:urban_threads/widgets/mobile_product_card.dart';
 import 'package:urban_threads/widgets/shop_section.dart';
+import 'package:urban_threads/widgets/simulated_checkout_sheet.dart';
 import 'package:urban_threads/widgets/store_footer.dart';
 import 'package:urban_threads/widgets/store_header.dart';
 import 'package:urban_threads/widgets/story_section.dart';
@@ -100,20 +101,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showCheckoutMessage() {
-    showDialog<void>(
+    if (_cart.lines.isEmpty) return;
+    showModalBottomSheet<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: StoreColors.paper,
-        title: const Text('Ready when you are'),
-        content: const Text(
-          'Your bag is ready. Online payment is not connected in this demo yet.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('GOT IT'),
-          ),
-        ],
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => SimulatedCheckoutSheet(
+        cart: _cart,
+        onOrderPlaced: () {
+          setState(() {
+            _cart.clear();
+          });
+        },
       ),
     );
   }
