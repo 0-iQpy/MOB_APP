@@ -199,7 +199,7 @@ void main() {
     // Verify simulated checkout sheet appears
     expect(find.text('CHECKOUT'), findsOneWidget);
     expect(find.text('SIMULATED DEMO'), findsOneWidget);
-    expect(find.text('DELIVERY ADDRESS'), findsNothing);
+    expect(find.text('DELIVERY ADDRESS'), findsOneWidget);
     expect(find.text('PAYMENT METHOD'), findsOneWidget);
     expect(find.text('GCash'), findsOneWidget);
     expect(find.text('Maya'), findsOneWidget);

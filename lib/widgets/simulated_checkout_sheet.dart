@@ -33,6 +33,26 @@ class _SimulatedCheckoutSheetState extends State<SimulatedCheckoutSheet> {
   String _selectedPayment = 'GCash';
   final String _orderReference = '#UT-84920';
 
+  late final TextEditingController _nameController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _addressController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _phoneController = TextEditingController();
+    _addressController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    super.dispose();
+  }
+
   void _startProcessing() async {
     setState(() {
       _step = _CheckoutStep.processing;
@@ -163,6 +183,10 @@ class _SimulatedCheckoutSheetState extends State<SimulatedCheckoutSheet> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
             children: [
+              _buildSectionHeader('DELIVERY ADDRESS'),
+              const SizedBox(height: 12),
+              _buildAddressInputs(),
+              const SizedBox(height: 24),
               _buildSectionHeader('PAYMENT METHOD'),
               const SizedBox(height: 12),
               _buildPaymentMethods(),
@@ -190,6 +214,85 @@ class _SimulatedCheckoutSheetState extends State<SimulatedCheckoutSheet> {
         fontSize: 11,
         fontWeight: FontWeight.w800,
         letterSpacing: 1.2,
+      ),
+    );
+  }
+
+  Widget _buildAddressInputs() {
+    return Column(
+      children: [
+        _buildTextField(
+          controller: _nameController,
+          label: 'RECIPIENT NAME',
+          hintText: 'Enter full name',
+          icon: Icons.person_outline,
+        ),
+        const SizedBox(height: 10),
+        _buildTextField(
+          controller: _phoneController,
+          label: 'PHONE NUMBER',
+          hintText: 'Enter mobile number',
+          icon: Icons.phone_outlined,
+          keyboardType: TextInputType.phone,
+        ),
+        const SizedBox(height: 10),
+        _buildTextField(
+          controller: _addressController,
+          label: 'STREET / UNIT / CITY',
+          hintText: 'Enter delivery address',
+          icon: Icons.place_outlined,
+          maxLines: 2,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    String? hintText,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      style: const TextStyle(
+        fontSize: 13,
+        color: StoreColors.ink,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(
+          fontSize: 10,
+          color: StoreColors.muted,
+          letterSpacing: 1.0,
+          fontWeight: FontWeight.w700,
+        ),
+        hintText: hintText,
+        hintStyle: const TextStyle(
+          fontSize: 12,
+          color: StoreColors.muted,
+          fontWeight: FontWeight.w400,
+        ),
+        prefixIcon: Icon(icon, size: 18, color: StoreColors.muted),
+        filled: true,
+        fillColor: StoreColors.imageSurface.withValues(alpha: 0.35),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: const BorderSide(color: StoreColors.line),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: const BorderSide(color: StoreColors.ink, width: 1.2),
+        ),
       ),
     );
   }
@@ -537,6 +640,10 @@ class _SimulatedCheckoutSheetState extends State<SimulatedCheckoutSheet> {
     final shipping = subtotal >= _freeShippingThreshold ? 0 : _shippingFee;
     final total = subtotal + shipping;
 
+    final customerName = _nameController.text.trim().isEmpty
+        ? 'Customer'
+        : _nameController.text.trim();
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
       child: Column(
@@ -597,6 +704,11 @@ class _SimulatedCheckoutSheetState extends State<SimulatedCheckoutSheet> {
                 const _ConfirmationRow(
                   label: 'ESTIMATED DELIVERY',
                   value: 'Estimated delivery: 2-3 business days',
+                ),
+                const Divider(height: 18, color: StoreColors.line),
+                _ConfirmationRow(
+                  label: 'DELIVER TO',
+                  value: customerName,
                 ),
                 const Divider(height: 18, color: StoreColors.line),
                 _ConfirmationRow(
