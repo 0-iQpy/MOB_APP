@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local agent state and briefings
+.overnight/
+MORNING_BRIEFING.md
