@@ -3,6 +3,7 @@ import 'package:urban_threads/core/theme/store_colors.dart';
 import 'package:urban_threads/models/cart_line.dart';
 import 'package:urban_threads/models/cart_model.dart';
 import 'package:urban_threads/utils/format_peso.dart';
+import 'package:urban_threads/widgets/live_support_sheet.dart';
 import 'package:urban_threads/widgets/store_primitives.dart';
 
 enum _CheckoutStep {
@@ -748,6 +749,32 @@ class _SimulatedCheckoutSheetState extends State<SimulatedCheckoutSheet> {
                   letterSpacing: 1.2,
                 ),
               ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: OutlinedButton.icon(
+              key: const ValueKey('checkout-urgent-support-btn'),
+              icon: const Icon(Icons.support_agent),
+              label: const Text('Need urgent help with this order? Chat with Support'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: StoreColors.ink,
+                side: const BorderSide(color: StoreColors.line),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                LiveSupportSheet.show(context, orderReference: '#UT-84920');
+              },
             ),
           ),
         ],

@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:urban_threads/app.dart';
+import 'package:urban_threads/data/mock_support_service.dart';
 import 'package:urban_threads/data/products.dart';
 import 'package:urban_threads/screens/mobile_catalog_screen.dart';
 import 'package:urban_threads/widgets/hero_section.dart';
+import 'package:urban_threads/widgets/live_support_sheet.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    MockSupportService.resetShared();
+  });
+
+  tearDown(() {
+    MockSupportService.resetShared();
+  });
 
   testWidgets('uses app navigation and filters the mobile catalog', (
     tester,
@@ -295,6 +305,140 @@ void main() {
                 'assets/images/the_new_essentials.jpg',
       );
       expect(heroImageFinder, findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'launches live support from header and sends quick reply chip',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(const UrbanThreadsApp());
+      await tester.pumpAndSettle();
+
+      final supportIconFinder = find.byKey(const ValueKey('open-live-support'));
+      expect(supportIconFinder, findsOneWidget);
+      await tester.tap(supportIconFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Marcus V.'), findsOneWidget);
+      expect(find.text('24/7 PRIORITY ESCALATION ACTIVE'), findsOneWidget);
+
+      final chipFinder = find.text('Wrong delivery address');
+      expect(chipFinder, findsOneWidget);
+      await tester.ensureVisible(chipFinder);
+      await tester.pumpAndSettle();
+      await tester.tap(chipFinder);
+      await tester.pump();
+
+      await tester.pump(const Duration(milliseconds: 1000));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('shipping hold'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'launches live support contextually from checkout confirmation with order hold notice',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(const UrbanThreadsApp());
+      await tester.pumpAndSettle();
+
+      // Navigate to Shop and add an item to bag
+      await tester.tap(find.text('Shop').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CLASSIC BOX TEE').first);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('XL').first);
+      await tester.tap(find.text('ADD TO BAG').first);
+      await tester.pumpAndSettle();
+
+      // Open bag and continue to checkout
+      await tester.tap(find.text('VIEW BAG'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('CONTINUE TO CHECKOUT'));
+      await tester.pumpAndSettle();
+
+      // Place order and settle into ORDER CONFIRMED state
+      final placeOrderFinder = find.textContaining('PLACE ORDER');
+      expect(placeOrderFinder, findsOneWidget);
+      await tester.tap(placeOrderFinder);
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(find.text('ORDER CONFIRMED'), findsOneWidget);
+
+      // Tap checkout urgent support button
+      final urgentSupportBtn = find.byKey(
+        const ValueKey('checkout-urgent-support-btn'),
+      );
+      expect(urgentSupportBtn, findsOneWidget);
+      await tester.tap(urgentSupportBtn);
+      await tester.pumpAndSettle();
+
+      // Verify checkout sheet pops and live support sheet opens
+      expect(find.text('ORDER CONFIRMED'), findsNothing);
+      expect(find.byType(LiveSupportSheet), findsOneWidget);
+
+      // Verify system notice contains 'Order #UT-84920'
+      expect(find.textContaining('Order #UT-84920'), findsWidgets);
+      expect(
+        find.text('Escalation opened for Order #UT-84920'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'submits supervisor escalation and updates priority status',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(const UrbanThreadsApp());
+      await tester.pumpAndSettle();
+
+      // Open live support
+      final supportIconFinder = find.byKey(const ValueKey('open-live-support'));
+      expect(supportIconFinder, findsOneWidget);
+      await tester.tap(supportIconFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.text('24/7 PRIORITY ESCALATION ACTIVE'), findsOneWidget);
+
+      // Enter 'I need a supervisor' in chat input
+      final inputFinder = find.byType(TextField);
+      expect(inputFinder, findsOneWidget);
+      await tester.enterText(inputFinder, 'I need a supervisor');
+      await tester.pumpAndSettle();
+
+      // Tap send button
+      final sendBtnFinder = find.byKey(const ValueKey('chat-send-btn'));
+      expect(sendBtnFinder, findsOneWidget);
+      await tester.tap(sendBtnFinder);
+      await tester.pump();
+
+      // Pump mock delay
+      await tester.pump(const Duration(milliseconds: 1000));
+      await tester.pumpAndSettle();
+
+      // Verify banner updates to 'PRIORITY LEVEL 1 - SUPERVISOR ESCALATED'
+      expect(
+        find.text('PRIORITY LEVEL 1 - SUPERVISOR ESCALATED'),
+        findsOneWidget,
+      );
     },
   );
 }

@@ -28,15 +28,16 @@ class StoreWordmark extends StatelessWidget {
 }
 
 class Eyebrow extends StatelessWidget {
-  const Eyebrow(this.text, {super.key});
+  const Eyebrow(this.text, {this.color = StoreColors.accent, super.key});
 
   final String text;
+  final Color color;
 
   @override
   Widget build(BuildContext context) => Text(
         text,
-        style: const TextStyle(
-          color: StoreColors.accent,
+        style: TextStyle(
+          color: color,
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 2,

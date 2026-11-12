@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:urban_threads/core/theme/store_colors.dart';
 import 'package:urban_threads/models/cart_model.dart';
+import 'package:urban_threads/widgets/live_support_sheet.dart';
 import 'package:urban_threads/widgets/store_primitives.dart';
 
 class StoreHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -51,6 +52,12 @@ class StoreHeader extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: 12),
         ],
+        IconButton(
+          key: const ValueKey('open-live-support'),
+          icon: const Icon(Icons.headset_mic_outlined),
+          tooltip: 'Live Support',
+          onPressed: () => LiveSupportSheet.show(context),
+        ),
         AnimatedBuilder(
           animation: cart,
           builder: (context, _) => Padding(
