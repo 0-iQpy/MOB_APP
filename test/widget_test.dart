@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:urban_threads/app.dart';
 import 'package:urban_threads/data/products.dart';
 import 'package:urban_threads/screens/mobile_catalog_screen.dart';
+import 'package:urban_threads/widgets/hero_section.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,8 @@ void main() {
     await tester.pumpWidget(const UrbanThreadsApp());
 
     expect(find.text('YOUR DAILY UNIFORM'), findsOneWidget);
+    expect(find.text('Made for your\nevery day.'), findsOneWidget);
+    expect(find.text('Made for your\\nevery day.'), findsNothing);
     expect(find.byType(NavigationBar), findsOneWidget);
 
     await tester.tap(find.text('Shop').last);
@@ -230,4 +233,68 @@ void main() {
     // Verify bag is cleared
     expect(find.text('YOUR BAG IS EMPTY'), findsOneWidget);
   });
+
+  testWidgets(
+    'renders discover screen with unescaped headline and local banner asset',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 1800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(const UrbanThreadsApp());
+
+      // Verify unescaped headline
+      expect(find.text('Made for your\nevery day.'), findsOneWidget);
+      expect(find.text('Made for your\\nevery day.'), findsNothing);
+
+      // Verify "THE NEW ESSENTIALS" banner card
+      expect(find.text('THE NEW\nESSENTIALS'), findsOneWidget);
+      expect(find.text('EXPLORE COLLECTION'), findsOneWidget);
+
+      // Verify banner uses local offline asset
+      final bannerImageFinder = find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is AssetImage &&
+            (widget.image as AssetImage).assetName ==
+                'assets/images/the_new_essentials.jpg',
+      );
+      expect(bannerImageFinder, findsOneWidget);
+
+      // Verify tapping explore collection navigates to shop catalog
+      await tester.tap(find.text('EXPLORE COLLECTION'));
+      await tester.pumpAndSettle();
+      expect(find.text('Find your next favorite'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'HeroSection renders with local essentials banner asset',
+    (tester) async {
+      tester.view.physicalSize = const Size(1280, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: HeroSection(onShopPressed: () {}),
+            ),
+          ),
+        ),
+      );
+
+      final heroImageFinder = find.byWidgetPredicate(
+        (widget) =>
+            widget is Image &&
+            widget.image is AssetImage &&
+            (widget.image as AssetImage).assetName ==
+                'assets/images/the_new_essentials.jpg',
+      );
+      expect(heroImageFinder, findsOneWidget);
+    },
+  );
 }

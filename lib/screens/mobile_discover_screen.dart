@@ -42,7 +42,7 @@ class MobileDiscoverScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 7),
                 const Text(
-                  'Made for your\\nevery day.',
+                  'Made for your\nevery day.',
                   style: TextStyle(
                     color: StoreColors.ink,
                     height: 1.06,
@@ -149,8 +149,7 @@ class _CollectionCard extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               const RemotePhoto(
-                url:
-                    'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=900&h=700&fit=crop&auto=format',
+                url: 'assets/images/the_new_essentials.jpg',
                 label: 'Streetwear collection',
                 icon: Icons.checkroom_outlined,
               ),

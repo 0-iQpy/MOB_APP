@@ -17,8 +17,7 @@ class HeroSection extends StatelessWidget {
           onShopPressed: onShopPressed,
         );
         const image = RemotePhoto(
-          url:
-              'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1200&h=1400&fit=crop&auto=format',
+          url: 'assets/images/the_new_essentials.jpg',
           label: 'Streetwear collection editorial',
           icon: Icons.checkroom_outlined,
           fit: BoxFit.cover,
